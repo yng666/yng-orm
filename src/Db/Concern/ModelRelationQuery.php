@@ -6,7 +6,7 @@ namespace Yng\Db\Concern;
 use Closure;
 use Yng\Helper\Str;
 use Yng\Model;
-use Yng\model\Collection as ModelCollection;
+use Yng\Model\Collection as ModelCollection;
 
 /**
  * 模型及关联查询
