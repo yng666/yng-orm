@@ -7,7 +7,7 @@ use Psr\SimpleCache\CacheInterface;
 use Yng\DbManager;
 
 /**
- * Connection interface
+ * 连接接口
  */
 interface ConnectionInterface
 {
@@ -73,7 +73,7 @@ interface ConnectionInterface
     public function close();
 
     /**
-     * 查找单条记录
+     * 查找单条记录(数据)
      * @access public
      * @param BaseQuery $query 查询对象
      * @return array
@@ -81,12 +81,21 @@ interface ConnectionInterface
     public function find(BaseQuery $query): array;
 
     /**
+     * 查找单条记录(字段)
+     * @access public
+     * @param BaseQuery $query 查询对象
+     * @return array
+     */
+    public function first(BaseQuery $query): array;
+
+
+    /**
      * 查找记录
      * @access public
      * @param BaseQuery $query 查询对象
      * @return array
      */
-    public function select(BaseQuery $query): array;
+    public function get(BaseQuery $query): array;
 
     /**
      * 插入记录

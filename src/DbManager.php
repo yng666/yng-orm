@@ -148,13 +148,13 @@ class DbManager
     }
 
     /**
-     * 记录SQL日志
+     * 记录日志
      * @access protected
-     * @param string $log  SQL日志信息
+     * @param string $log  日志信息
      * @param string $type 日志类型
      * @return void
      */
-    public function log(string $log, string $type = 'sql')
+    public function log(string $log, string $type = 'info')
     {
         if ($this->log) {
             $this->log->log($type, $log);
@@ -162,6 +162,24 @@ class DbManager
             $this->dbLog[$type][] = $log;
         }
     }
+
+    /**
+     * 记录SQL日志
+     * @access protected
+     * @param string $log  SQL日志信息
+     * @param string $type 日志类型
+     * @return void
+     */
+    public function sqlLog(string $log, string $type = 'sql')
+    {
+        if ($this->log) {
+            $this->log->log($type, $log);
+        } else {
+            $this->dbLog[$type][] = $log;
+        }
+    }
+
+
 
     /**
      * 获得查询日志（没有设置日志对象使用）
@@ -256,7 +274,7 @@ class DbManager
         if (false !== strpos($type, '\\')) {
             $class = $type;
         } else {
-            $class = '\\Yng\\db\\connector\\' . ucfirst($type);
+            $class = '\\Yng\\Db\\Connector\\' . ucfirst($type);
         }
 
         /** @var ConnectionInterface $connection */

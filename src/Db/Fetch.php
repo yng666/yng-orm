@@ -76,7 +76,7 @@ class Fetch
         $this->query->setOption('field', (array) $field);
 
         // 生成查询SQL
-        $sql = $this->builder->select($this->query, $one);
+        $sql = $this->builder->get($this->query, $one);
 
         if (isset($options['field'])) {
             $this->query->setOption('field', $options['field']);
@@ -111,7 +111,7 @@ class Fetch
         $this->query->setOption('field', $field);
 
         // 生成查询SQL
-        $sql = $this->builder->select($this->query);
+        $sql = $this->builder->get($this->query);
 
         if (isset($options['field'])) {
             $this->query->setOption('field', $options['field']);
@@ -327,7 +327,7 @@ class Fetch
         }
 
         // 生成查询SQL
-        $sql = $this->builder->select($this->query);
+        $sql = $this->builder->get($this->query);
 
         return $this->fetch($sql);
     }
@@ -348,7 +348,7 @@ class Fetch
         }
 
         // 生成查询SQL
-        $sql = $this->builder->select($this->query, true);
+        $sql = $this->builder->get($this->query, true);
 
         // 获取实际执行的SQL语句
         return $this->fetch($sql);

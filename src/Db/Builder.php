@@ -1,14 +1,14 @@
 <?php
 declare (strict_types = 1);
 
-namespace Yng\db;
+namespace Yng\Db;
 
 use Closure;
 use PDO;
 use Yng\Db\Exception\DbException as Exception;
 
 /**
- * Db Builder
+ * Db构建器
  */
 abstract class Builder
 {
@@ -297,7 +297,6 @@ abstract class Builder
         if (!empty($options['soft_delete'])) {
             // 附加软删除条件
             [$field, $condition] = $options['soft_delete'];
-
             $binds    = $query->getFieldsBindType();
             $whereStr = $whereStr ? '( ' . $whereStr . ' ) AND ' : '';
             $whereStr = $whereStr . $this->parseWhereItem($query, $field, $condition, $binds);
@@ -1118,11 +1117,11 @@ abstract class Builder
      * @param  bool  $one   是否仅获取一个记录
      * @return string
      */
-    public function select(Query $query, bool $one = false): string
+    public function get(Query $query, bool $one = false): string
     {
         $options = $query->getOptions();
-
-        return str_replace(
+        // dd('第三步到builder::get了',$options);
+        $sql = str_replace(
             ['%TABLE%', '%DISTINCT%', '%EXTRA%', '%FIELD%', '%JOIN%', '%WHERE%', '%GROUP%', '%HAVING%', '%ORDER%', '%LIMIT%', '%UNION%', '%LOCK%', '%COMMENT%', '%FORCE%'],
             [
                 $this->parseTable($query, $options['table']),
@@ -1142,6 +1141,9 @@ abstract class Builder
             ],
             $this->selectSql
         );
+        
+
+        return $sql;
     }
 
     /**
@@ -1243,7 +1245,7 @@ abstract class Builder
             $field = $this->parseKey($query, $field, true);
         }
 
-        return 'INSERT INTO ' . $this->parseTable($query, $table) . ' (' . implode(',', $fields) . ') ' . $this->select($query);
+        return 'INSERT INTO ' . $this->parseTable($query, $table) . ' (' . implode(',', $fields) . ') ' . $this->get($query);
     }
 
     /**

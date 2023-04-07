@@ -69,10 +69,10 @@ class Mysql extends Builder
      * @param  bool   $one    是否仅获取一个记录
      * @return string
      */
-    public function select(Query $query, bool $one = false): string
+    public function get(Query $query, bool $one = false): string
     {
         $options = $query->getOptions();
-
+        // dd('到builder->mysql::get');
         return str_replace(
             ['%TABLE%', '%PARTITION%', '%DISTINCT%', '%EXTRA%', '%FIELD%', '%JOIN%', '%WHERE%', '%GROUP%', '%HAVING%', '%ORDER%', '%LIMIT%', '%UNION%', '%LOCK%', '%COMMENT%', '%FORCE%'],
             [

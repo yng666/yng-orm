@@ -112,7 +112,6 @@ abstract class Connection implements ConnectionInterface
         if (!empty($config)) {
             $this->config = array_merge($this->config, $config);
         }
-
         // 创建Builder对象
         $class = $this->getBuilderClass();
 
@@ -227,7 +226,7 @@ abstract class Connection implements ConnectionInterface
         if (empty($listen)) {
             $listen[] = function ($sql, $time, $master) {
                 if (0 === strpos($sql, 'CONNECT:')) {
-                    $this->db->log($sql);
+                    $this->db->sqlLog($sql);
                     return;
                 }
 
@@ -239,7 +238,7 @@ abstract class Connection implements ConnectionInterface
                     $master = '';
                 }
 
-                $this->db->log($sql . ' [ ' . $master . 'RunTime:' . $time . 's ]');
+                $this->db->sqlLog($sql . ' [ ' . $master . 'RunTime:' . $time . 's ]');
             };
         }
 

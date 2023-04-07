@@ -213,7 +213,7 @@ abstract class PDOConnection extends Connection
      */
     public function getBuilderClass(): string
     {
-        return $this->getConfig('builder') ?: '\\Yng\\db\\builder\\' . ucfirst($this->getConfig('type'));
+        return $this->getConfig('builder') ?: '\\Yng\\Db\\Builder\\' . ucfirst($this->getConfig('driver'));
     }
 
     /**
@@ -688,18 +688,19 @@ abstract class PDOConnection extends Connection
                 return $data;
             }
         }
-
+        
         if ($sql instanceof Closure) {
             $sql  = $sql($query);
             $bind = $query->getBind();
         }
-
+        
         if (!isset($master)) {
             $master = $query->getOptions('master') ? true : false;
         }
 
         $procedure = $query->getOptions('procedure') ? true : in_array(strtolower(substr(trim($sql), 0, 4)), ['call', 'exec']);
 
+        // 执行查询并返回pdo对象
         $this->getPDOStatement($sql, $bind, $master, $procedure);
 
         $resultSet    = $this->getResult($procedure);
@@ -725,7 +726,7 @@ abstract class PDOConnection extends Connection
     {
         $bind = $query->getBind();
         // 生成查询SQL
-        $sql = $this->builder->select($query);
+        $sql = $this->builder->get($query);
 
         return $this->queryPDOStatement($query, $sql, $bind);
     }
@@ -773,6 +774,7 @@ abstract class PDOConnection extends Connection
 
             return $this->PDOStatement;
         } catch (\Throwable | \Exception $e) {
+
             if ($this->transTimes > 0) {
                 // 事务活动中时不应该进行重试，应直接中断执行，防止造成污染。
                 if ($this->isBreak($e)) {
@@ -865,10 +867,35 @@ abstract class PDOConnection extends Connection
         } catch (DbEventException $e) {
             return [];
         }
+        // dd('第二步到PDOConnection::find了',$query);
 
         // 执行查询
         $resultSet = $this->pdoQuery($query, function ($query) {
-            return $this->builder->select($query, true);
+            return $this->builder->get($query, true);
+        });
+
+        return $resultSet[0] ?? [];
+    }
+
+    /**
+     * 查找单条记录
+     * @access public
+     * @param BaseQuery $query 查询对象
+     * @return array
+     * @throws DbException
+     */
+    public function first(BaseQuery $query): array
+    {
+        // 事件回调
+        try {
+            $this->db->trigger('before_first', $query);
+        } catch (DbEventException $e) {
+            return [];
+        }
+
+        // 执行查询
+        $resultSet = $this->pdoQuery($query, function ($query) {
+            return $this->builder->get($query, true);
         });
 
         return $resultSet[0] ?? [];
@@ -886,7 +913,7 @@ abstract class PDOConnection extends Connection
         $options = $query->parseOptions();
 
         // 生成查询SQL
-        $sql = $this->builder->select($query);
+        $sql = $this->builder->get($query);
 
         $condition = $options['where']['AND'] ?? null;
 
@@ -901,17 +928,17 @@ abstract class PDOConnection extends Connection
      * @return array
      * @throws DbException
      */
-    public function select(BaseQuery $query): array
+    public function get(BaseQuery $query): array
     {
         try {
-            $this->db->trigger('before_select', $query);
+            $this->db->trigger('before_get', $query);
         } catch (DbEventException $e) {
             return [];
         }
 
         // 执行查询操作
         return $this->pdoQuery($query, function ($query) {
-            return $this->builder->select($query);
+            return $this->builder->get($query);
         });
     }
 
@@ -1110,7 +1137,7 @@ abstract class PDOConnection extends Connection
         }
 
         // 生成查询SQL
-        $sql = $this->builder->select($query, $one);
+        $sql = $this->builder->get($query, $one);
 
         if (isset($options['field'])) {
             $query->setOption('field', $options['field']);
@@ -1209,7 +1236,7 @@ abstract class PDOConnection extends Connection
         }
 
         // 生成查询SQL
-        $sql = $this->builder->select($query);
+        $sql = $this->builder->get($query);
 
         if (isset($options['field'])) {
             $query->setOption('field', $options['field']);

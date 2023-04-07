@@ -25,3 +25,14 @@ composer require yng/yng-orm
 ## 文档
 
 详细参考 [YngORM开发指南](https://www.kancloud.cn/manual/Yng-orm/content)
+
+
+# 代码执行流程
+```php
+User::find(1);
+
+// // 有数据
+// 1.先走继承的类 Yng\Model -> 找到find方法,它在数据查询基础类里Yng\Db\BaseQuery::find()
+// 2.在Yng\Db\BaseQuery::find()里,它会跑到数据连接器里的 Ynd\Db\PDOConnection::find()
+// 3.在Ynd\Db\PDOConnection::find()里,会先执行 Yng\Db\Builder::get() 生成一条sql语句 ,然后执行语句
+```

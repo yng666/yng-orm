@@ -103,9 +103,10 @@ class Query extends BaseQuery
      * @param bool $fetch 是否返回sql
      * @return $this|Fetch
      */
-    public function fetchSql(bool $fetch = true)
+    public function toSql(bool $fetch = true)
     {
         $this->options['fetch_sql'] = $fetch;
+
 
         if ($fetch) {
             return new Fetch($this);
@@ -267,7 +268,7 @@ class Query extends BaseQuery
      */
     public function buildSql(bool $sub = true): string
     {
-        return $sub ? '( ' . $this->fetchSql()->select() . ' )' : $this->fetchSql()->select();
+        return $sub ? '( ' . $this->toSql()->select() . ' )' : $this->toSql()->select();
     }
 
     /**
@@ -414,7 +415,7 @@ class Query extends BaseQuery
             }
         }
 
-        $resultSet = $query->order($column, $order)->select();
+        $resultSet = $query->order($column, $order)->get();
 
         while (count($resultSet) > 0) {
             if (false === call_user_func($callback, $resultSet)) {
@@ -433,7 +434,7 @@ class Query extends BaseQuery
                     ->where($column, 'asc' == strtolower($order) ? '>' : '<', $lastId);
             }
 
-            $resultSet = $query->bind($bind)->order($column, $order)->select();
+            $resultSet = $query->bind($bind)->order($column, $order)->get();
         }
 
         return true;

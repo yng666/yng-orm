@@ -314,7 +314,7 @@ abstract class BaseQuery
      * @param mixed $field 字段信息
      * @return $this
      */
-    public function field($field)
+    public function select($field)
     {
         if (empty($field)) {
             return $this;
@@ -624,7 +624,7 @@ abstract class BaseQuery
             $bind  = $this->bind;
             $total = $this->count();
             if ($total > 0) {
-                $results = $this->options($options)->bind($bind)->page($page, $listRows)->select();
+                $results = $this->options($options)->bind($bind)->page($page, $listRows)->get();
             } else {
                 if (!empty($this->model)) {
                     $results = new \Yng\Model\Collection([]);
@@ -633,10 +633,10 @@ abstract class BaseQuery
                 }
             }
         } elseif ($simple) {
-            $results = $this->limit(($page - 1) * $listRows, $listRows + 1)->select();
+            $results = $this->limit(($page - 1) * $listRows, $listRows + 1)->get();
             $total   = null;
         } else {
-            $results = $this->page($page, $listRows)->select();
+            $results = $this->page($page, $listRows)->get();
         }
 
         $this->removeOption('limit');
@@ -690,7 +690,7 @@ abstract class BaseQuery
 
         $data = $this->newQuery()
             ->options($newOption)
-            ->field($key)
+            ->select($key)
             ->where(true)
             ->order($key, $sort)
             ->limit(1)
@@ -708,7 +708,7 @@ abstract class BaseQuery
             $query->where($key, 'asc' == $sort ? '>' : '<', $lastId);
         })
             ->limit($listRows)
-            ->select();
+            ->get();
 
         $this->options($options);
 
@@ -743,7 +743,7 @@ abstract class BaseQuery
 
         $result = $this->when($lastId, function ($query) use ($key, $sort, $lastId) {
             $query->where($key, 'asc' == $sort ? '>' : '<', $lastId);
-        })->limit($limit)->select();
+        })->limit($limit)->get();
 
         $last = $result->last();
 
@@ -817,7 +817,7 @@ abstract class BaseQuery
      * @param array|string $alias 数据表别名
      * @return $this
      */
-    public function alias($alias)
+    public function as($alias)
     {
         if (is_array($alias)) {
             $this->options['alias'] = $alias;
@@ -1106,14 +1106,14 @@ abstract class BaseQuery
      * @throws ModelNotFoundException
      * @throws DataNotFoundException
      */
-    public function select($data = null): Collection
+    public function get($data = null): Collection
     {
         if (!is_null($data)) {
             // 主键条件分析
             $this->parsePkWhere($data);
         }
 
-        $resultSet = $this->connection->select($this);
+        $resultSet = $this->connection->get($this);
 
         // 返回结果处理
         if (!empty($this->options['fail']) && count($resultSet) == 0) {
@@ -1142,6 +1142,7 @@ abstract class BaseQuery
      */
     public function find($data = null)
     {
+        // dd('第一步到basequery::find了',$this->options);
         if (!is_null($data)) {
             // AR模式分析主键条件
             $this->parsePkWhere($data);
@@ -1152,7 +1153,7 @@ abstract class BaseQuery
         } else {
             $result = $this->connection->find($this);
         }
-
+        // dd('第一步到basequery::find了',$result);
         // 数据处理
         if (empty($result)) {
             return $this->resultToEmpty();
@@ -1167,6 +1168,31 @@ abstract class BaseQuery
 
         return $result;
     }
+
+    /**
+     * 查找单条记录
+     * @access public
+     * @param array $columns 查询字段
+     * @return array|Model|null|static|mixed
+     * @throws Exception
+     * @throws ModelNotFoundException
+     * @throws DataNotFoundException
+     */
+    public function first($columns = ['*'])
+    {
+
+        $result = $this->connection->first($this);
+
+        // 数据处理
+        if (empty($result)) {
+            return $this->resultToEmpty();
+        } else {
+            $this->result($result);
+        }
+
+        return $result;
+    }
+
 
     /**
      * 分析表达式（可用于查询或者写入操作）
@@ -1277,8 +1303,8 @@ abstract class BaseQuery
 
             $table = is_array($this->options['table']) ? key($this->options['table']) : $this->options['table'];
 
-            if (!empty($this->options['alias'][$table])) {
-                $alias = $this->options['alias'][$table];
+            if (!empty($this->options['as'][$table])) {
+                $alias = $this->options['as'][$table];
             }
 
             $key = isset($alias) ? $alias . '.' . $pk : $pk;

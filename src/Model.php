@@ -28,11 +28,11 @@ use Yng\Db\BaseQuery as Query;
  */
 abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonable
 {
-    use model\concern\Attribute;
-    use model\concern\RelationShip;
-    use model\concern\ModelEvent;
-    use model\concern\TimeStamp;
-    use model\concern\Conversion;
+    use Model\Concern\Attribute;
+    use Model\Concern\RelationShip;
+    use Model\Concern\ModelEvent;
+    use Model\Concern\TimeStamp;
+    use Model\Concern\Conversion;
 
     /**
      * 数据是否存在

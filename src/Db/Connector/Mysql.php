@@ -55,6 +55,7 @@ class Mysql extends PDOConnection
 
         $sql    = 'SHOW FULL COLUMNS FROM ' . $tableName;
         $pdo    = $this->getPDOStatement($sql);
+
         $result = $pdo->fetchAll(PDO::FETCH_ASSOC);
         $info   = [];
 
