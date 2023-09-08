@@ -476,7 +476,7 @@ class Mongo
      *
      * @return MongoQuery
      */
-    public function select(Query $query, bool $one = false): MongoQuery
+    public function get(Query $query, bool $one = false): MongoQuery
     {
         $options = $query->getOptions();
 

@@ -209,7 +209,7 @@ class Mongo extends Connection
         $options = $query->parseOptions();
 
         // 生成MongoQuery对象
-        $mongoQuery = $this->builder->select($query);
+        $mongoQuery = $this->builder->get($query);
         $master     = (bool) $query->getOptions('master');
 
         // 执行查询操作
@@ -888,16 +888,16 @@ class Mongo extends Connection
      *
      * @return array
      */
-    public function select(BaseQuery $query): array
+    public function get(BaseQuery $query): array
     {
         try {
-            $this->db->trigger('before_select', $query);
+            $this->db->trigger('before_get', $query);
         } catch (DbEventException $e) {
             return [];
         }
 
         return $this->mongoQuery($query, function ($query) {
-            return $this->builder->select($query);
+            return $this->builder->get($query);
         });
     }
 
@@ -926,7 +926,7 @@ class Mongo extends Connection
 
         // 执行查询
         $resultSet = $this->mongoQuery($query, function ($query) {
-            return $this->builder->select($query, true);
+            return $this->builder->get($query, true);
         });
 
         return $resultSet[0] ?? [];
@@ -959,7 +959,7 @@ class Mongo extends Connection
             }
         }
 
-        $mongoQuery = $this->builder->select($query, true);
+        $mongoQuery = $this->builder->get($query, true);
 
         if (isset($options['projection'])) {
             $query->setOption('projection', $options['projection']);
@@ -1024,7 +1024,7 @@ class Mongo extends Connection
             }
         }
 
-        $mongoQuery = $this->builder->select($query);
+        $mongoQuery = $this->builder->get($query);
 
         if (isset($options['projection'])) {
             $query->setOption('projection', $options['projection']);

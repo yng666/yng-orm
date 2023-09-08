@@ -914,7 +914,7 @@ abstract class Model implements JsonSerializable, ArrayAccess, Arrayable, Jsonab
             $data = [];
         }
 
-        $resultSet = $query->select((array) $data);
+        $resultSet = $query->get((array) $data);
 
         foreach ($resultSet as $result) {
             $result->force($force)->delete();

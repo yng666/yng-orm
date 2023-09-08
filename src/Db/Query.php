@@ -301,7 +301,7 @@ class Query extends BaseQuery
      */
     public function buildSql(bool $sub = true): string
     {
-        return $sub ? '( ' . $this->fetchSql()->select() . ' )' : $this->fetchSql()->select();
+        return $sub ? '( ' . $this->fetchSql()->get() . ' )' : $this->fetchSql()->get();
     }
 
     /**
@@ -577,7 +577,7 @@ class Query extends BaseQuery
             }
         }
 
-        $resultSet = $query->order($column, $order)->select();
+        $resultSet = $query->order($column, $order)->get();
 
         while (count($resultSet) > 0) {
             if (false === call_user_func($callback, $resultSet)) {
@@ -596,7 +596,7 @@ class Query extends BaseQuery
                     ->where($column, 'asc' == strtolower($order) ? '>' : '<', $lastId);
             }
 
-            $resultSet = $query->bind($bind)->order($column, $order)->select();
+            $resultSet = $query->bind($bind)->order($column, $order)->get();
         }
 
         return true;

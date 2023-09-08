@@ -222,9 +222,9 @@ trait ResultOperation
      *
      * @return array|Collection|static[]
      */
-    public function selectOrFail($data = [])
+    public function getOrFail($data = [])
     {
-        return $this->failException(true)->select($data);
+        return $this->failException(true)->get($data);
     }
 
     /**
