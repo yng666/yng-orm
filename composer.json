@@ -25,7 +25,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Yng\\Orm\\": "src"
+            "Yng\\": "src"
         },
         "files": [
             "Stubs/load_stubs.php"
