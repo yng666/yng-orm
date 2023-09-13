@@ -193,6 +193,23 @@ class DbManager
     }
 
     /**
+     * 记录SQL日志
+     * @access protected
+     * @param string $log  SQL日志信息
+     * @param string $type 日志类型
+     * @return void
+     */
+    public function sqlLog(string $log, string $type = 'sql')
+    {
+        if ($this->log) {
+            $this->log->log($type, $log);
+        } else {
+            $this->dbLog[$type][] = $log;
+        }
+    }
+
+
+    /**
      * 获取配置参数.
      *
      * @param string $name    配置参数
